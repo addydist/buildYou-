@@ -5,6 +5,7 @@ import { clerkMiddleware } from "@clerk/express";
 import tasksRouter from "./routes/tasks.js";
 import cityRouter from "./routes/city.js";
 import profileRouter from "./routes/profile.js";
+import integrationsRouter from "./routes/integrations.js";
 
 const app = express();
 const PORT = Number(process.env.PORT ?? 3001);
@@ -25,6 +26,7 @@ app.use(clerkMiddleware());
 app.use("/tasks", tasksRouter);
 app.use("/city", cityRouter);
 app.use("/profile", profileRouter);
+app.use("/integrations", integrationsRouter);
 
 app.get("/health", (_req, res) => {
   res.json({ status: "ok" });
