@@ -15,6 +15,7 @@ type CityRow = {
   last_active_date: string | null;
   last_passive_claim_date: string | null;
   rare_drops: Array<{ id: string; name: string; chance: number; collectedAt: string }>;
+  activity_log: Record<string, number>;
   updated_at: Date;
 };
 
@@ -27,6 +28,7 @@ const fromRow = (row: CityRow) => ({
   lastActiveDate: row.last_active_date,
   lastPassiveClaimDate: row.last_passive_claim_date,
   rareDrops: row.rare_drops,
+  activityLog: row.activity_log ?? {},
 });
 
 router.get("/", async (req, res) => {
@@ -46,22 +48,34 @@ router.get("/", async (req, res) => {
 
 router.put("/", async (req, res) => {
   const userId = getUserId(req);
-  const { cityName, population, resources, tiles, streak, lastActiveDate, lastPassiveClaimDate, rareDrops } =
-    req.body as {
-      cityName: string;
-      population: number;
-      resources: Record<string, number>;
-      tiles: unknown[];
-      streak: number;
-      lastActiveDate: string | null;
-      lastPassiveClaimDate: string | null;
-      rareDrops: unknown[];
-    };
+  const {
+    cityName,
+    population,
+    resources,
+    tiles,
+    streak,
+    lastActiveDate,
+    lastPassiveClaimDate,
+    rareDrops,
+    activityLog,
+  } = req.body as {
+    cityName: string;
+    population: number;
+    resources: Record<string, number>;
+    tiles: unknown[];
+    streak: number;
+    lastActiveDate: string | null;
+    lastPassiveClaimDate: string | null;
+    rareDrops: unknown[];
+    activityLog?: Record<string, number>;
+  };
 
   try {
     await db.query(
-      `INSERT INTO city_state (user_id, city_name, population, resources, tiles, streak, last_active_date, last_passive_claim_date, rare_drops)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+      `INSERT INTO city_state
+         (user_id, city_name, population, resources, tiles, streak,
+          last_active_date, last_passive_claim_date, rare_drops, activity_log)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
        ON CONFLICT (user_id) DO UPDATE SET
          city_name               = EXCLUDED.city_name,
          population              = EXCLUDED.population,
@@ -71,6 +85,7 @@ router.put("/", async (req, res) => {
          last_active_date        = EXCLUDED.last_active_date,
          last_passive_claim_date = EXCLUDED.last_passive_claim_date,
          rare_drops              = EXCLUDED.rare_drops,
+         activity_log            = EXCLUDED.activity_log,
          updated_at              = NOW()`,
       [
         userId,
@@ -82,6 +97,7 @@ router.put("/", async (req, res) => {
         lastActiveDate,
         lastPassiveClaimDate,
         JSON.stringify(rareDrops),
+        JSON.stringify(activityLog ?? {}),
       ],
     );
     res.json({ ok: true });
