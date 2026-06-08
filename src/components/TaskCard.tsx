@@ -22,12 +22,12 @@ export function TaskCard({ task, expanded = false }: { task: Task; expanded?: bo
   };
 
   return (
-    <div className="flex items-center gap-3 rounded-lg border border-slate-200 bg-white p-3">
+    <div className="flex items-center gap-3 rounded-lg border border-slate-200 bg-white p-3 dark:border-slate-700 dark:bg-slate-900">
       <button
         className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-md border ${
           task.completed
             ? "border-emerald-600 bg-emerald-600 text-white"
-            : "border-slate-300 text-slate-400"
+            : "border-slate-300 text-slate-400 dark:border-slate-600"
         }`}
         disabled={task.completed}
         onClick={handleComplete}
@@ -39,13 +39,13 @@ export function TaskCard({ task, expanded = false }: { task: Task; expanded?: bo
       <div className="min-w-0 flex-1">
         <p
           className={`truncate text-sm font-bold ${
-            task.completed ? "text-slate-500 line-through" : "text-slate-950"
+            task.completed ? "text-slate-400 line-through dark:text-slate-600" : "text-slate-950 dark:text-white"
           }`}
         >
           {task.name}
         </p>
         {expanded ? (
-          <div className="mt-1 flex flex-wrap gap-2 text-xs text-slate-500">
+          <div className="mt-1 flex flex-wrap gap-2 text-xs text-slate-500 dark:text-slate-400">
             <span className="flex items-center gap-1">
               <Icon className="h-3 w-3" />
               {task.category}

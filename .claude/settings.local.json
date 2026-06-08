@@ -2,7 +2,14 @@
   "permissions": {
     "allow": [
       "Bash(npm install *)",
-      "Bash(npx tsc *)"
+      "Bash(npx tsc *)",
+      "WebFetch(domain:pixijs.com)",
+      "WebFetch(domain:www.npmjs.com)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "Bash(npx tailwindcss *)",
+      "Bash(grep -o \"\\\\.dark \\\\\\\\\\\\\\\\?:\\\\?[a-z]\" ./.theme-check.css)",
+      "Bash(grep -o \"\\\\.dark\\\\\\\\\\\\\\\\:[a-z-]*\" .theme-check.css)",
+      "Bash(npx eslint *)"
     ]
   }
 }

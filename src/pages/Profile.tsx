@@ -69,12 +69,12 @@ function StatCard({ icon: Icon, label, value, color }: {
   color: string;
 }) {
   return (
-    <div className="flex flex-col items-center gap-1 rounded-lg border border-slate-200 bg-white p-4 text-center shadow-sm">
-      <div className={`flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 ${color}`}>
+    <div className="flex flex-col items-center gap-1 rounded-lg border border-slate-200 bg-white p-4 text-center shadow-sm dark:border-slate-700 dark:bg-slate-900">
+      <div className={`flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 dark:bg-slate-800 ${color}`}>
         <Icon className="h-5 w-5" />
       </div>
-      <p className="text-2xl font-bold text-slate-900">{value}</p>
-      <p className="text-xs font-semibold text-slate-500">{label}</p>
+      <p className="text-2xl font-bold text-slate-900 dark:text-white">{value}</p>
+      <p className="text-xs font-semibold text-slate-500 dark:text-slate-400">{label}</p>
     </div>
   );
 }
@@ -87,11 +87,11 @@ function MetricField({ label, value, unit, onChange, editing }: {
   editing: boolean;
 }) {
   return (
-    <div className="rounded-lg border border-slate-100 bg-slate-50 p-3">
-      <p className="mb-1 text-xs font-semibold text-slate-500">{label}</p>
+    <div className="rounded-lg border border-slate-100 bg-slate-50 p-3 dark:border-slate-700 dark:bg-slate-800">
+      <p className="mb-1 text-xs font-semibold text-slate-500 dark:text-slate-400">{label}</p>
       {editing ? (
         <input
-          className="w-full rounded border border-slate-300 bg-white px-2 py-1 text-sm font-bold text-slate-900"
+          className="w-full rounded border border-slate-300 bg-white px-2 py-1 text-sm font-bold text-slate-900 dark:border-slate-600 dark:bg-slate-900 dark:text-white"
           min={0}
           onChange={(e) => onChange(e.target.value === "" ? null : Number(e.target.value))}
           step="0.1"
@@ -99,8 +99,8 @@ function MetricField({ label, value, unit, onChange, editing }: {
           value={value ?? ""}
         />
       ) : (
-        <p className="text-lg font-bold text-slate-900">
-          {value !== null ? `${value} ${unit}` : <span className="text-slate-400">—</span>}
+        <p className="text-lg font-bold text-slate-900 dark:text-white">
+          {value !== null ? `${value} ${unit}` : <span className="text-slate-400 dark:text-slate-600">—</span>}
         </p>
       )}
     </div>
@@ -118,12 +118,12 @@ function GoalBar({ label, current, goal, unit, color }: {
   return (
     <div>
       <div className="mb-1 flex items-center justify-between">
-        <span className="text-sm font-semibold text-slate-700">{label}</span>
-        <span className="text-xs text-slate-500">
+        <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">{label}</span>
+        <span className="text-xs text-slate-500 dark:text-slate-400">
           {current !== null ? current : "—"} / {goal !== null ? goal : "—"} {unit}
         </span>
       </div>
-      <div className="h-2 w-full overflow-hidden rounded-full bg-slate-100">
+      <div className="h-2 w-full overflow-hidden rounded-full bg-slate-100 dark:bg-slate-700">
         <div
           className={`h-full rounded-full transition-all ${color}`}
           style={{ width: `${pct}%` }}
@@ -225,7 +225,7 @@ export function Profile() {
   return (
     <div className="space-y-4 pb-8">
       {/* ── hero header ── */}
-      <section className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+      <section className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-900">
         {/* gradient banner */}
         <div className="h-32 bg-gradient-to-r from-teal-600 via-teal-500 to-emerald-400" />
 
@@ -233,7 +233,7 @@ export function Profile() {
           {/* avatar row */}
           <div className="-mt-12 mb-4 flex items-end justify-between gap-4">
             <div className="relative">
-              <div className="h-24 w-24 overflow-hidden rounded-full border-4 border-white bg-slate-200 shadow-md">
+              <div className="h-24 w-24 overflow-hidden rounded-full border-4 border-white bg-slate-200 shadow-md dark:border-slate-900 dark:bg-slate-700">
                 {avatarUrl ? (
                   <img alt="Profile" className="h-full w-full object-cover" src={avatarUrl} />
                 ) : (
@@ -264,7 +264,7 @@ export function Profile() {
               {editing ? (
                 <>
                   <button
-                    className="flex h-9 items-center gap-2 rounded-md border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+                    className="flex h-9 items-center gap-2 rounded-md border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-700 hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
                     onClick={handleCancel}
                     type="button"
                   >
@@ -283,7 +283,7 @@ export function Profile() {
                 </>
               ) : (
                 <button
-                  className="flex h-9 items-center gap-2 rounded-md border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+                  className="flex h-9 items-center gap-2 rounded-md border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-700 hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
                   onClick={() => setEditing(true)}
                   type="button"
                 >
@@ -297,24 +297,24 @@ export function Profile() {
           {/* name + meta */}
           <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
             <div className="min-w-0 flex-1">
-              <h2 className="text-2xl font-bold text-slate-950">{displayName}</h2>
-              <p className="text-sm font-semibold text-teal-700">{stage} · {cityName}</p>
+              <h2 className="text-2xl font-bold text-slate-950 dark:text-white">{displayName}</h2>
+              <p className="text-sm font-semibold text-teal-700 dark:text-teal-400">{stage} · {cityName}</p>
 
               {editing ? (
                 <input
-                  className="mt-2 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm"
+                  className="mt-2 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm dark:border-slate-600 dark:bg-slate-800 dark:text-white"
                   onChange={(e) => setFormField("bio", e.target.value)}
                   placeholder="Write a short bio…"
                   value={form.bio ?? ""}
                 />
               ) : (
-                profile.bio && <p className="mt-2 text-sm text-slate-600">{profile.bio}</p>
+                profile.bio && <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">{profile.bio}</p>
               )}
 
-              <div className="mt-2 flex flex-wrap items-center gap-3 text-xs text-slate-500">
+              <div className="mt-2 flex flex-wrap items-center gap-3 text-xs text-slate-500 dark:text-slate-400">
                 {editing ? (
                   <input
-                    className="rounded-md border border-slate-300 bg-white px-3 py-1.5 text-xs"
+                    className="rounded-md border border-slate-300 bg-white px-3 py-1.5 text-xs dark:border-slate-600 dark:bg-slate-800 dark:text-white"
                     onChange={(e) => setFormField("location", e.target.value)}
                     placeholder="Location"
                     value={form.location ?? ""}
@@ -380,9 +380,9 @@ export function Profile() {
             />
           </div>
           {bmi && (
-            <div className="mt-3 flex items-center justify-between rounded-lg bg-teal-50 px-4 py-2">
-              <span className="text-sm font-semibold text-teal-800">BMI</span>
-              <span className="text-xl font-bold text-teal-900">{bmi}</span>
+            <div className="mt-3 flex items-center justify-between rounded-lg bg-teal-50 px-4 py-2 dark:bg-teal-900/30">
+              <span className="text-sm font-semibold text-teal-800 dark:text-teal-300">BMI</span>
+              <span className="text-xl font-bold text-teal-900 dark:text-teal-200">{bmi}</span>
             </div>
           )}
         </Panel>
@@ -391,13 +391,13 @@ export function Profile() {
         <Panel title="Goals">
           <div className="space-y-4">
             <div>
-              <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-400">Targets</p>
+              <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-400 dark:text-slate-500">Targets</p>
               {editing ? (
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="mb-1 block text-xs font-semibold text-slate-600">Goal Weight (kg)</label>
+                    <label className="mb-1 block text-xs font-semibold text-slate-600 dark:text-slate-400">Goal Weight (kg)</label>
                     <input
-                      className="w-full rounded-md border border-slate-300 bg-white px-3 py-1.5 text-sm"
+                      className="w-full rounded-md border border-slate-300 bg-white px-3 py-1.5 text-sm dark:border-slate-600 dark:bg-slate-800 dark:text-white"
                       min={0}
                       onChange={(e) => setFormField("goalWeightKg", e.target.value === "" ? null : Number(e.target.value))}
                       step="0.5"
@@ -406,9 +406,9 @@ export function Profile() {
                     />
                   </div>
                   <div>
-                    <label className="mb-1 block text-xs font-semibold text-slate-600">Goal Body Fat (%)</label>
+                    <label className="mb-1 block text-xs font-semibold text-slate-600 dark:text-slate-400">Goal Body Fat (%)</label>
                     <input
-                      className="w-full rounded-md border border-slate-300 bg-white px-3 py-1.5 text-sm"
+                      className="w-full rounded-md border border-slate-300 bg-white px-3 py-1.5 text-sm dark:border-slate-600 dark:bg-slate-800 dark:text-white"
                       min={0}
                       onChange={(e) => setFormField("goalBodyFat", e.target.value === "" ? null : Number(e.target.value))}
                       step="0.5"
@@ -417,9 +417,9 @@ export function Profile() {
                     />
                   </div>
                   <div>
-                    <label className="mb-1 block text-xs font-semibold text-slate-600">Workout days / week</label>
+                    <label className="mb-1 block text-xs font-semibold text-slate-600 dark:text-slate-400">Workout days / week</label>
                     <input
-                      className="w-full rounded-md border border-slate-300 bg-white px-3 py-1.5 text-sm"
+                      className="w-full rounded-md border border-slate-300 bg-white px-3 py-1.5 text-sm dark:border-slate-600 dark:bg-slate-800 dark:text-white"
                       max={7}
                       min={1}
                       onChange={(e) => setFormField("goalWorkoutDays", Number(e.target.value))}
@@ -428,9 +428,9 @@ export function Profile() {
                     />
                   </div>
                   <div>
-                    <label className="mb-1 block text-xs font-semibold text-slate-600">Daily Calories (kcal)</label>
+                    <label className="mb-1 block text-xs font-semibold text-slate-600 dark:text-slate-400">Daily Calories (kcal)</label>
                     <input
-                      className="w-full rounded-md border border-slate-300 bg-white px-3 py-1.5 text-sm"
+                      className="w-full rounded-md border border-slate-300 bg-white px-3 py-1.5 text-sm dark:border-slate-600 dark:bg-slate-800 dark:text-white"
                       min={0}
                       onChange={(e) => setFormField("goalDailyCalories", Number(e.target.value))}
                       step={50}
@@ -478,19 +478,19 @@ export function Profile() {
               const url = editing ? form.socialLinks[key] ?? "" : profile.socialLinks[key] ?? "";
               return (
                 <div className="flex items-center gap-3" key={key}>
-                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-slate-600">
+                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400">
                     <Icon className="h-4 w-4" />
                   </div>
                   {editing ? (
                     <input
-                      className="flex-1 rounded-md border border-slate-300 bg-white px-3 py-1.5 text-sm"
+                      className="flex-1 rounded-md border border-slate-300 bg-white px-3 py-1.5 text-sm dark:border-slate-600 dark:bg-slate-800 dark:text-white"
                       onChange={(e) => setSocialLink(key, e.target.value)}
                       placeholder={placeholder}
                       value={url}
                     />
                   ) : url ? (
                     <a
-                      className="flex min-w-0 flex-1 items-center gap-1 truncate text-sm font-semibold text-teal-700 hover:underline"
+                      className="flex min-w-0 flex-1 items-center gap-1 truncate text-sm font-semibold text-teal-700 hover:underline dark:text-teal-400"
                       href={url.startsWith("http") ? url : `https://${url}`}
                       rel="noopener noreferrer"
                       target="_blank"
@@ -499,9 +499,9 @@ export function Profile() {
                       <ExternalLink className="h-3 w-3 shrink-0" />
                     </a>
                   ) : (
-                    <span className="text-sm text-slate-400">Not set</span>
+                    <span className="text-sm text-slate-400 dark:text-slate-600">Not set</span>
                   )}
-                  <span className="hidden shrink-0 text-xs font-semibold text-slate-500 sm:block">{label}</span>
+                  <span className="hidden shrink-0 text-xs font-semibold text-slate-500 sm:block dark:text-slate-400">{label}</span>
                 </div>
               );
             })}
@@ -511,7 +511,7 @@ export function Profile() {
         {/* recent activity */}
         <Panel title="Recent Activity">
           {completedTasks.length === 0 ? (
-            <p className="text-sm text-slate-500">No completed tasks yet. Go crush some goals!</p>
+            <p className="text-sm text-slate-500 dark:text-slate-400">No completed tasks yet. Go crush some goals!</p>
           ) : (
             <div className="space-y-2">
               {completedTasks.slice(0, 8).map((task) => {
@@ -523,17 +523,17 @@ export function Profile() {
                 });
                 return (
                   <div
-                    className="flex items-center justify-between gap-3 rounded-lg border border-slate-100 bg-slate-50 px-3 py-2"
+                    className="flex items-center justify-between gap-3 rounded-lg border border-slate-100 bg-slate-50 px-3 py-2 dark:border-slate-700 dark:bg-slate-800"
                     key={task.id}
                   >
                     <div className="flex min-w-0 items-center gap-2">
                       <Icon className={`h-4 w-4 shrink-0 ${categoryColors[task.category]}`} />
                       <div className="min-w-0">
-                        <p className="truncate text-sm font-semibold text-slate-900">{task.name}</p>
-                        <p className="text-xs text-slate-500">{dateStr} · {task.difficulty}</p>
+                        <p className="truncate text-sm font-semibold text-slate-900 dark:text-white">{task.name}</p>
+                        <p className="text-xs text-slate-500 dark:text-slate-400">{dateStr} · {task.difficulty}</p>
                       </div>
                     </div>
-                    <span className="shrink-0 text-sm font-bold text-teal-700">+{xp} XP</span>
+                    <span className="shrink-0 text-sm font-bold text-teal-700 dark:text-teal-400">+{xp} XP</span>
                   </div>
                 );
               })}

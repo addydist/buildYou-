@@ -20,6 +20,14 @@ body {
     #f7f8f4;
 }
 
+.dark body {
+  background:
+    linear-gradient(120deg, rgba(15, 23, 42, 0.98), rgba(15, 23, 42, 0.95)),
+    radial-gradient(circle at top left, rgba(20, 184, 166, 0.07), transparent 30%),
+    #0f172a;
+  color-scheme: dark;
+}
+
 button,
 input,
 select {

@@ -20,15 +20,15 @@ const categoryIcons: Record<Category, LucideIcon> = {
 
 function RewardPreview({ rewards }: { rewards: Partial<Record<ResourceKey, number>> }) {
   return (
-    <div className="rounded-lg bg-slate-50 p-3">
-      <p className="mb-2 text-sm font-bold text-slate-700">Reward Preview</p>
+    <div className="rounded-lg bg-slate-50 p-3 dark:bg-slate-800">
+      <p className="mb-2 text-sm font-bold text-slate-700 dark:text-slate-300">Reward Preview</p>
       <div className="flex flex-wrap gap-2">
         {Object.entries(rewards).map(([key, amount]) => {
           const meta = resourceMeta[key as ResourceKey];
           const Icon = meta.icon;
           return (
             <span
-              className="flex items-center gap-1 rounded-full bg-white px-2 py-1 text-xs font-bold text-slate-700"
+              className="flex items-center gap-1 rounded-full bg-white px-2 py-1 text-xs font-bold text-slate-700 dark:bg-slate-700 dark:text-slate-200"
               key={key}
             >
               <Icon className={`h-3 w-3 ${meta.color}`} />
@@ -70,7 +70,7 @@ export function Tasks() {
         <form className="space-y-4" onSubmit={handleSubmit}>
           <Field label="Task Name">
             <input
-              className="h-11 w-full rounded-md border border-slate-300 bg-white px-3 text-sm"
+              className="h-11 w-full rounded-md border border-slate-300 bg-white px-3 text-sm text-slate-900 dark:border-slate-600 dark:bg-slate-800 dark:text-white dark:placeholder-slate-500"
               onChange={(e) => setName(e.target.value)}
               placeholder="Learn React"
               value={name}
@@ -78,7 +78,7 @@ export function Tasks() {
           </Field>
           <Field label="Difficulty">
             <select
-              className="h-11 w-full rounded-md border border-slate-300 bg-white px-3 text-sm"
+              className="h-11 w-full rounded-md border border-slate-300 bg-white px-3 text-sm text-slate-900 dark:border-slate-600 dark:bg-slate-800 dark:text-white"
               onChange={(e) => setDifficulty(e.target.value as Difficulty)}
               value={difficulty}
             >
@@ -96,8 +96,8 @@ export function Tasks() {
                   <button
                     className={`flex h-10 items-center justify-center gap-2 rounded-md border px-2 text-sm font-semibold ${
                       active
-                        ? "border-teal-700 bg-teal-50 text-teal-900"
-                        : "border-slate-200 bg-white text-slate-700"
+                        ? "border-teal-700 bg-teal-50 text-teal-900 dark:border-teal-500 dark:bg-teal-900/40 dark:text-teal-300"
+                        : "border-slate-200 bg-white text-slate-700 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300"
                     }`}
                     key={item}
                     onClick={() => setCategory(item)}
@@ -112,7 +112,7 @@ export function Tasks() {
           </Field>
           <Field label="Estimated Time (minutes)">
             <input
-              className="h-11 w-full rounded-md border border-slate-300 bg-white px-3 text-sm"
+              className="h-11 w-full rounded-md border border-slate-300 bg-white px-3 text-sm text-slate-900 dark:border-slate-600 dark:bg-slate-800 dark:text-white"
               min={5}
               onChange={(e) => setEstimatedMinutes(Number(e.target.value))}
               step={5}

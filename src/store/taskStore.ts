@@ -9,6 +9,7 @@ type TaskState = {
   addTask: (input: TaskInput) => Promise<void>;
   markCompleted: (taskId: string) => void;
   resetTasks: () => void;
+  checkDailyReset: () => void;
 };
 
 export const useTaskStore = create<TaskState>()(
@@ -38,6 +39,15 @@ export const useTaskStore = create<TaskState>()(
         taskService.complete(taskId).catch(console.error);
       },
       resetTasks: () => set({ tasks: [] }),
+      // Hide completed tasks from previous days so each day starts fresh
+      checkDailyReset: () => {
+        const today = new Date().toISOString().slice(0, 10);
+        set((state) => ({
+          tasks: state.tasks.filter(
+            (t) => !t.completed || t.createdAt.slice(0, 10) === today
+          ),
+        }));
+      },
     }),
     { name: "addy-city-tasks" }
   )

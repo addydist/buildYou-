@@ -48,7 +48,7 @@ const rollRareDrop = (): RareDrop | null => {
 };
 
 export const emptyTiles = (): Tile[] =>
-  Array.from({ length: 12 }, (_, i) => ({
+  Array.from({ length: 16 }, (_, i) => ({
     id: i,
     buildingId: i === 0 ? "home" : i === 1 ? "farm" : i === 5 ? "school" : null,
   }));
@@ -63,9 +63,11 @@ type CityState = {
   lastPassiveClaimDate: string | null;
   rareDrops: RareDrop[];
   selectedTileId: number | null;
+  activityLog: Record<string, number>;
   loadCity: () => Promise<void>;
   onTaskCompleted: (task: Task) => void;
   buildOnTile: (tileId: number, buildingId: BuildingId) => void;
+  moveTile: (fromId: number, toId: number) => void;
   selectTile: (tileId: number | null) => void;
   collectPassiveRewards: () => void;
   resetCity: () => void;
@@ -81,12 +83,13 @@ const initialCityState = {
   lastPassiveClaimDate: null as string | null,
   rareDrops: [] as RareDrop[],
   selectedTileId: null as number | null,
+  activityLog: {} as Record<string, number>,
 };
 
 const pushToApi = (get: () => CityState) => {
-  const { cityName, population, resources, tiles, streak, lastActiveDate, lastPassiveClaimDate, rareDrops } = get();
+  const { cityName, population, resources, tiles, streak, lastActiveDate, lastPassiveClaimDate, rareDrops, activityLog } = get();
   cityService
-    .save({ cityName, population, resources, tiles, streak, lastActiveDate, lastPassiveClaimDate, rareDrops })
+    .save({ cityName, population, resources, tiles, streak, lastActiveDate, lastPassiveClaimDate, rareDrops, activityLog })
     .catch(console.error);
 };
 
@@ -120,6 +123,10 @@ export const useCityStore = create<CityState>()(
             streak: nextStreak,
             lastActiveDate: today,
             rareDrops: rareDrop ? [rareDrop, ...state.rareDrops] : state.rareDrops,
+            activityLog: {
+              ...state.activityLog,
+              [today]: (state.activityLog[today] ?? 0) + 1,
+            },
           };
         });
         pushToApi(get);
@@ -134,6 +141,22 @@ export const useCityStore = create<CityState>()(
             population: state.population + building.population,
             selectedTileId: null,
             tiles: state.tiles.map((t) => (t.id === tileId ? { ...t, buildingId } : t)),
+          };
+        });
+        pushToApi(get);
+      },
+      moveTile: (fromId, toId) => {
+        set((state) => {
+          const fromTile = state.tiles.find((t) => t.id === fromId);
+          const toTile   = state.tiles.find((t) => t.id === toId);
+          if (!fromTile || !toTile || !fromTile.buildingId) return state;
+          return {
+            selectedTileId: null,
+            tiles: state.tiles.map((t) => {
+              if (t.id === fromId) return { ...t, buildingId: toTile.buildingId };
+              if (t.id === toId)   return { ...t, buildingId: fromTile.buildingId };
+              return t;
+            }),
           };
         });
         pushToApi(get);
@@ -159,7 +182,7 @@ export const useCityStore = create<CityState>()(
         pushToApi(get);
       },
       resetCity: () => {
-        const newState = { ...initialCityState, tiles: emptyTiles(), rareDrops: [] as RareDrop[] };
+        const newState = { ...initialCityState, tiles: emptyTiles(), rareDrops: [] as RareDrop[], activityLog: {} as Record<string, number> };
         set(newState);
         cityService
           .save({
@@ -171,6 +194,7 @@ export const useCityStore = create<CityState>()(
             lastActiveDate: newState.lastActiveDate,
             lastPassiveClaimDate: newState.lastPassiveClaimDate,
             rareDrops: newState.rareDrops,
+            activityLog: newState.activityLog,
           })
           .catch(console.error);
       },
@@ -187,6 +211,7 @@ export const useCityStore = create<CityState>()(
         lastPassiveClaimDate: s.lastPassiveClaimDate,
         rareDrops: s.rareDrops,
         selectedTileId: s.selectedTileId,
+        activityLog: s.activityLog,
       }),
     }
   )
