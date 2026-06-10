@@ -60,10 +60,10 @@ const rollRareDrop = (): RareDrop | null => {
 };
 
 export const emptyTiles = (): Tile[] =>
-  Array.from({ length: 16 }, (_, i) => ({
-    id: i,
-    buildingId: i === 0 ? "home" : i === 1 ? "farm" : i === 5 ? "school" : null,
-  }));
+  Array.from({ length: 16 }, (_, i) => ({ id: i, buildingId: null }));
+
+const zeroResources = (): Resources =>
+  Object.fromEntries(Object.keys(initialResources).map((key) => [key, 0])) as Resources;
 
 type CityState = {
   cityName: string;
@@ -236,7 +236,18 @@ export const useCityStore = create<CityState>()(
         pushToApi(get);
       },
       resetCity: () => {
-        const newState = { ...initialCityState, tiles: emptyTiles(), rareDrops: [] as RareDrop[], activityLog: {} as Record<string, number>, characterStats: { strength: 0, intelligence: 0, wealth: 0, wisdom: 0, willpower: 0 } as CharacterStats };
+        const newState = {
+          ...initialCityState,
+          population: 0,
+          resources: zeroResources(),
+          tiles: emptyTiles(),
+          streak: 0,
+          lastActiveDate: todayKey(),
+          lastPassiveClaimDate: null as string | null,
+          rareDrops: [] as RareDrop[],
+          activityLog: {} as Record<string, number>,
+          characterStats: { strength: 0, intelligence: 0, wealth: 0, wisdom: 0, willpower: 0 } as CharacterStats,
+        };
         set(newState);
         cityService
           .save({

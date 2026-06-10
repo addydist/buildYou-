@@ -494,7 +494,7 @@ export function CityGrid({ onOpenShop }: { onOpenShop?: () => void }) {
       {/* Hint */}
       <div className="pointer-events-none absolute bottom-5 left-1/2 z-20 -translate-x-1/2">
         <span className="rounded-full bg-slate-900/60 px-3 py-1 text-xs font-medium text-slate-300 shadow backdrop-blur-sm">
-          Click + to open shop · Hold building to drag it · Scroll to zoom
+          Scroll to zoom
         </span>
       </div>
     </div>
