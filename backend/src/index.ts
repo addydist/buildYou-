@@ -11,14 +11,20 @@ import leaderboardRouter from "./routes/leaderboard.js";
 const app = express();
 const PORT = Number(process.env.PORT ?? 3001);
 
+const DEFAULT_ORIGINS = [
+  "http://localhost:5173",
+  "http://127.0.0.1:5173",
+  "http://localhost:5174",
+  "http://127.0.0.1:5174",
+];
+
+const allowedOrigins = process.env.CORS_ORIGINS
+  ? process.env.CORS_ORIGINS.split(",").map((origin) => origin.trim())
+  : DEFAULT_ORIGINS;
+
 app.use(
   cors({
-    origin: [
-      "http://localhost:5173",
-      "http://127.0.0.1:5173",
-      "http://localhost:5174",
-      "http://127.0.0.1:5174",
-    ],
+    origin: allowedOrigins,
   }),
 );
 app.use(express.json());
