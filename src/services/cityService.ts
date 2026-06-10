@@ -1,4 +1,4 @@
-import type { RareDrop, Resources, Tile } from "../types/city";
+import type { CharacterStats, RareDrop, Resources, Tile } from "../types/city";
 import { authFetch } from "./apiClient";
 
 const BASE = (import.meta as { env?: { VITE_API_URL?: string } }).env?.VITE_API_URL ?? "http://localhost:3001";
@@ -12,6 +12,8 @@ export type CityStatePayload = {
   lastActiveDate: string | null;
   lastPassiveClaimDate: string | null;
   rareDrops: RareDrop[];
+  activityLog?: Record<string, number>;
+  characterStats?: CharacterStats;
 };
 
 export const cityService = {

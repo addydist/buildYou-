@@ -10,6 +10,9 @@ export type ResourceKey =
 
 export type Resources = Record<ResourceKey, number>;
 
+export type StatKey = "strength" | "intelligence" | "wealth" | "wisdom" | "willpower";
+export type CharacterStats = Record<StatKey, number>; // raw XP values
+
 export type BuildingId =
   | "home"
   | "gym"
@@ -29,6 +32,7 @@ export type Building = {
   cost: Partial<Resources>;
   passive: Partial<Resources>;
   population: number;
+  statBoost?: Partial<Record<StatKey, number>>; // additive multiplier, e.g. 0.25 = +25% XP
 };
 
 export type Tile = {

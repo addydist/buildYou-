@@ -1,8 +1,9 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { buildings, categoryRewards, difficultyRewards, initialResources } from "../gameData";
-import type { BuildingId, RareDrop, Resources, Tile } from "../types/city";
+import { buildings, categoryRewards, categoryToStat, difficultyRewards, difficultyStatXP, initialResources } from "../gameData";
+import type { BuildingId, CharacterStats, RareDrop, Resources, StatKey, Tile } from "../types/city";
 import type { Task } from "../types/task";
+import type { IntegrationEvent } from "../types/integration";
 import { cityService } from "../services/cityService";
 
 const todayKey = () => new Date().toISOString().slice(0, 10);
@@ -38,6 +39,17 @@ const getMultiplier = (streak: number) => {
   return 1;
 };
 
+// Sum additive stat boosts from all built buildings
+const getStatBoost = (tiles: Tile[], stat: StatKey): number => {
+  let bonus = 0;
+  for (const tile of tiles) {
+    if (!tile.buildingId) continue;
+    const b = buildings.find((bld) => bld.id === tile.buildingId);
+    if (b?.statBoost?.[stat]) bonus += b.statBoost[stat];
+  }
+  return 1 + bonus; // e.g. 0.25 bonus → multiplier of 1.25
+};
+
 const rollRareDrop = (): RareDrop | null => {
   const roll = Math.random();
   const now = new Date().toISOString();
@@ -64,8 +76,10 @@ type CityState = {
   rareDrops: RareDrop[];
   selectedTileId: number | null;
   activityLog: Record<string, number>;
+  characterStats: CharacterStats;
   loadCity: () => Promise<void>;
   onTaskCompleted: (task: Task) => void;
+  onIntegrationSync: (events: IntegrationEvent[]) => void;
   buildOnTile: (tileId: number, buildingId: BuildingId) => void;
   moveTile: (fromId: number, toId: number) => void;
   selectTile: (tileId: number | null) => void;
@@ -84,12 +98,13 @@ const initialCityState = {
   rareDrops: [] as RareDrop[],
   selectedTileId: null as number | null,
   activityLog: {} as Record<string, number>,
+  characterStats: { strength: 0, intelligence: 0, wealth: 0, wisdom: 0, willpower: 0 } as CharacterStats,
 };
 
 const pushToApi = (get: () => CityState) => {
-  const { cityName, population, resources, tiles, streak, lastActiveDate, lastPassiveClaimDate, rareDrops, activityLog } = get();
+  const { cityName, population, resources, tiles, streak, lastActiveDate, lastPassiveClaimDate, rareDrops, activityLog, characterStats } = get();
   cityService
-    .save({ cityName, population, resources, tiles, streak, lastActiveDate, lastPassiveClaimDate, rareDrops, activityLog })
+    .save({ cityName, population, resources, tiles, streak, lastActiveDate, lastPassiveClaimDate, rareDrops, activityLog, characterStats })
     .catch(console.error);
 };
 
@@ -108,6 +123,7 @@ export const useCityStore = create<CityState>()(
       onTaskCompleted: (task) => {
         set((state) => {
           const today = todayKey();
+          const isFirstTaskToday = state.lastActiveDate !== today;
           const nextStreak =
             state.lastActiveDate === today
               ? state.streak
@@ -115,9 +131,22 @@ export const useCityStore = create<CityState>()(
                 ? state.streak + 1
                 : 1;
           const mult = getMultiplier(nextStreak);
+
+          // Resources (existing system)
           let resources = addResources(state.resources, difficultyRewards[task.difficulty], mult);
           resources = addResources(resources, categoryRewards[task.category], mult);
           const rareDrop = rollRareDrop();
+
+          // Character stat XP
+          const primaryStat = categoryToStat[task.category];
+          const baseXP = difficultyStatXP[task.difficulty];
+          const statMult = getStatBoost(state.tiles, primaryStat) * mult;
+          const gainedStatXP = Math.round(baseXP * statMult);
+
+          // Willpower: every completed task + bonus on first task of the day
+          const willMult = getStatBoost(state.tiles, "willpower") * mult;
+          const gainedWillpower = Math.round((3 + (isFirstTaskToday ? 15 : 0)) * willMult);
+
           return {
             resources,
             streak: nextStreak,
@@ -126,6 +155,31 @@ export const useCityStore = create<CityState>()(
             activityLog: {
               ...state.activityLog,
               [today]: (state.activityLog[today] ?? 0) + 1,
+            },
+            characterStats: {
+              ...state.characterStats,
+              [primaryStat]: state.characterStats[primaryStat] + gainedStatXP,
+              willpower: state.characterStats.willpower + gainedWillpower,
+            },
+          };
+        });
+        pushToApi(get);
+      },
+      onIntegrationSync: (events) => {
+        if (events.length === 0) return;
+        set((state) => {
+          const totalKnowledge = events.reduce((sum, e) => sum + e.points, 0);
+          // Integration events also level up Intelligence (coding/learning activities)
+          const intelMult = getStatBoost(state.tiles, "intelligence");
+          const gainedIntel = Math.round(totalKnowledge * intelMult);
+          return {
+            resources: {
+              ...state.resources,
+              knowledge: state.resources.knowledge + totalKnowledge,
+            },
+            characterStats: {
+              ...state.characterStats,
+              intelligence: state.characterStats.intelligence + gainedIntel,
             },
           };
         });
@@ -182,7 +236,7 @@ export const useCityStore = create<CityState>()(
         pushToApi(get);
       },
       resetCity: () => {
-        const newState = { ...initialCityState, tiles: emptyTiles(), rareDrops: [] as RareDrop[], activityLog: {} as Record<string, number> };
+        const newState = { ...initialCityState, tiles: emptyTiles(), rareDrops: [] as RareDrop[], activityLog: {} as Record<string, number>, characterStats: { strength: 0, intelligence: 0, wealth: 0, wisdom: 0, willpower: 0 } as CharacterStats };
         set(newState);
         cityService
           .save({
@@ -195,6 +249,7 @@ export const useCityStore = create<CityState>()(
             lastPassiveClaimDate: newState.lastPassiveClaimDate,
             rareDrops: newState.rareDrops,
             activityLog: newState.activityLog,
+            characterStats: newState.characterStats,
           })
           .catch(console.error);
       },
@@ -212,6 +267,7 @@ export const useCityStore = create<CityState>()(
         rareDrops: s.rareDrops,
         selectedTileId: s.selectedTileId,
         activityLog: s.activityLog,
+        characterStats: s.characterStats,
       }),
     }
   )

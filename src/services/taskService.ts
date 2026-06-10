@@ -25,4 +25,9 @@ export const taskService = {
     if (!res.ok) throw new Error("Failed to complete task");
     return res.json() as Promise<Task>;
   },
+
+  delete: async (id: string): Promise<void> => {
+    const res = await authFetch(`${BASE}/tasks/${id}`, { method: "DELETE" });
+    if (!res.ok && res.status !== 404) throw new Error("Failed to delete task");
+  },
 };

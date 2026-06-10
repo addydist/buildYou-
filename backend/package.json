@@ -7,7 +7,7 @@
     "dev": "tsx watch src/index.ts",
     "build": "tsc",
     "start": "node dist/index.js",
-    "migrate": "dotenv -e .env -- psql \"%DATABASE_URL%\" -f migrations/001_create_tasks.sql -f migrations/002_create_city_state.sql -f migrations/003_multi_user.sql -f migrations/004_create_profiles.sql"
+    "migrate": "dotenv -e .env -- psql \"%DATABASE_URL%\" -f migrations/001_create_tasks.sql -f migrations/002_create_city_state.sql -f migrations/003_multi_user.sql -f migrations/004_create_profiles.sql -f migrations/005_create_integrations.sql -f migrations/006_add_character_stats.sql -f migrations/007_recurring_tasks.sql -f migrations/008_expand_integration_sources.sql"
   },
   "dependencies": {
     "@clerk/express": "^2.1.23",

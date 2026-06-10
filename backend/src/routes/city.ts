@@ -16,6 +16,7 @@ type CityRow = {
   last_passive_claim_date: string | null;
   rare_drops: Array<{ id: string; name: string; chance: number; collectedAt: string }>;
   activity_log: Record<string, number>;
+  character_stats: Record<string, number>;
   updated_at: Date;
 };
 
@@ -29,6 +30,7 @@ const fromRow = (row: CityRow) => ({
   lastPassiveClaimDate: row.last_passive_claim_date,
   rareDrops: row.rare_drops,
   activityLog: row.activity_log ?? {},
+  characterStats: row.character_stats ?? { strength: 0, intelligence: 0, wealth: 0, wisdom: 0, willpower: 0 },
 });
 
 router.get("/", async (req, res) => {
@@ -58,6 +60,7 @@ router.put("/", async (req, res) => {
     lastPassiveClaimDate,
     rareDrops,
     activityLog,
+    characterStats,
   } = req.body as {
     cityName: string;
     population: number;
@@ -68,14 +71,15 @@ router.put("/", async (req, res) => {
     lastPassiveClaimDate: string | null;
     rareDrops: unknown[];
     activityLog?: Record<string, number>;
+    characterStats?: Record<string, number>;
   };
 
   try {
     await db.query(
       `INSERT INTO city_state
          (user_id, city_name, population, resources, tiles, streak,
-          last_active_date, last_passive_claim_date, rare_drops, activity_log)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+          last_active_date, last_passive_claim_date, rare_drops, activity_log, character_stats)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
        ON CONFLICT (user_id) DO UPDATE SET
          city_name               = EXCLUDED.city_name,
          population              = EXCLUDED.population,
@@ -86,6 +90,7 @@ router.put("/", async (req, res) => {
          last_passive_claim_date = EXCLUDED.last_passive_claim_date,
          rare_drops              = EXCLUDED.rare_drops,
          activity_log            = EXCLUDED.activity_log,
+         character_stats         = EXCLUDED.character_stats,
          updated_at              = NOW()`,
       [
         userId,
@@ -98,6 +103,7 @@ router.put("/", async (req, res) => {
         lastPassiveClaimDate,
         JSON.stringify(rareDrops),
         JSON.stringify(activityLog ?? {}),
+        JSON.stringify(characterStats ?? { strength: 0, intelligence: 0, wealth: 0, wisdom: 0, willpower: 0 }),
       ],
     );
     res.json({ ok: true });

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { SignedIn, SignedOut, SignIn, useAuth, UserButton } from "@clerk/clerk-react";
 import { Check, Hammer, Home, Landmark, Moon, Sun, User, Zap } from "lucide-react";
+import { xpToLevel, overallRank } from "./components/CharacterSheet";
 import { Dashboard } from "./pages/Dashboard";
 import { Tasks } from "./pages/Tasks";
 import { BuildingShop, City } from "./pages/City";
@@ -82,10 +83,18 @@ function TopBar({
   );
 }
 
+const STAT_ICONS: Record<string, string> = {
+  strength: "💪", intelligence: "🧠", wealth: "💰", wisdom: "📚", willpower: "🔥",
+};
+
 function SidePanel() {
-  const { resources, population, streak, rareDrops, resetCity, lastActiveDate } = useCityStore();
+  const { resources, population, streak, rareDrops, resetCity, lastActiveDate, characterStats } = useCityStore();
   const resetTasks = useTaskStore((s) => s.resetTasks);
   const cityPaused = selectCityPaused(lastActiveDate);
+  const stats = characterStats ?? { strength: 0, intelligence: 0, wealth: 0, wisdom: 0, willpower: 0 };
+  const avgLevel = Math.floor(
+    Object.values(stats).reduce((s, xp) => s + xpToLevel(xp), 0) / Object.keys(stats).length
+  );
 
   const handleReset = () => {
     resetCity();
@@ -104,21 +113,26 @@ function SidePanel() {
       <Panel title="Resources">
         <ResourceBar resources={resources} compact />
       </Panel>
-      <Panel title="Streak & Status">
-        <p className={`mb-3 text-sm font-semibold ${cityPaused ? "text-amber-600 dark:text-amber-400" : "text-emerald-700 dark:text-emerald-400"}`}>
-          {cityPaused
-            ? "Growth paused — complete a task today."
-            : `Active · ${streak}-day streak`}
-        </p>
-        <div className="space-y-2">
-          {stages.map(({ label, active, range }) => (
-            <div className="flex items-center justify-between gap-3" key={label}>
-              <span className={`text-sm font-bold ${active ? "text-teal-800 dark:text-teal-400" : "text-slate-400 dark:text-slate-600"}`}>
-                {label}
-              </span>
-              <span className="text-xs text-slate-400 dark:text-slate-600">{range}</span>
-            </div>
-          ))}
+      <Panel title="Character">
+        <div className="mb-3 flex items-center justify-between">
+          <div>
+            <p className="text-xs text-slate-500 dark:text-slate-400">{overallRank(avgLevel)}</p>
+            <p className="text-2xl font-bold text-slate-900 dark:text-white">Lv {avgLevel}</p>
+          </div>
+          <p className={`text-sm font-semibold ${cityPaused ? "text-amber-600 dark:text-amber-400" : "text-emerald-700 dark:text-emerald-400"}`}>
+            {cityPaused ? "Paused" : `🔥 ${streak} streak`}
+          </p>
+        </div>
+        <div className="space-y-1.5">
+          {Object.entries(stats).map(([key, xp]) => {
+            const level = xpToLevel(xp);
+            return (
+              <div className="flex items-center justify-between gap-2" key={key}>
+                <span className="text-sm">{STAT_ICONS[key]} <span className="text-xs capitalize text-slate-600 dark:text-slate-400">{key}</span></span>
+                <span className="text-xs font-bold text-slate-700 dark:text-slate-300">Lv {level}</span>
+              </div>
+            );
+          })}
         </div>
       </Panel>
       <Panel title="Rare Collection">
@@ -160,8 +174,8 @@ function AppInner() {
 
   useEffect(() => {
     setTokenGetter(getToken);
-    Promise.all([loadCity(), loadTasks()]).then(() => {
-      checkDailyReset();
+    Promise.all([loadCity(), loadTasks()]).then(async () => {
+      await checkDailyReset();
     }).finally(() => setReady(true));
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 

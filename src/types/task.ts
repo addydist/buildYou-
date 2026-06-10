@@ -9,6 +9,8 @@ export type Task = {
   estimatedMinutes: number;
   completed: boolean;
   createdAt: string;
+  isRecurring?: boolean;
+  recurringGroupId?: string;
 };
 
 export type TaskInput = {
@@ -16,4 +18,6 @@ export type TaskInput = {
   difficulty: Difficulty;
   category: Category;
   estimatedMinutes: number;
+  isRecurring?: boolean;
+  recurringGroupId?: string;
 };

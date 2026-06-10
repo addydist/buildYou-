@@ -1,4 +1,4 @@
-import { BookOpen, BriefcaseBusiness, Check, Dumbbell, Library } from "lucide-react";
+import { BookOpen, BriefcaseBusiness, Check, Dumbbell, Library, RefreshCw } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import type { Category, Task } from "../types/task";
 import { useCityStore } from "../store/cityStore";
@@ -11,7 +11,11 @@ const categoryIcons: Record<Category, LucideIcon> = {
   Reading: Library,
 };
 
-export function TaskCard({ task, expanded = false }: { task: Task; expanded?: boolean }) {
+export function TaskCard({ task, expanded = false, onDelete }: {
+  task: Task;
+  expanded?: boolean;
+  onDelete?: (id: string) => void;
+}) {
   const markCompleted = useTaskStore((s) => s.markCompleted);
   const onTaskCompleted = useCityStore((s) => s.onTaskCompleted);
   const Icon = categoryIcons[task.category];
@@ -36,14 +40,23 @@ export function TaskCard({ task, expanded = false }: { task: Task; expanded?: bo
       >
         {task.completed ? <Check className="h-4 w-4" /> : null}
       </button>
+
       <div className="min-w-0 flex-1">
-        <p
-          className={`truncate text-sm font-bold ${
-            task.completed ? "text-slate-400 line-through dark:text-slate-600" : "text-slate-950 dark:text-white"
-          }`}
-        >
-          {task.name}
-        </p>
+        <div className="flex items-center gap-2">
+          <p
+            className={`truncate text-sm font-bold ${
+              task.completed ? "text-slate-400 line-through dark:text-slate-600" : "text-slate-950 dark:text-white"
+            }`}
+          >
+            {task.name}
+          </p>
+          {task.isRecurring && (
+            <span className="flex shrink-0 items-center gap-0.5 rounded-full bg-teal-50 px-1.5 py-0.5 text-[10px] font-bold text-teal-700 dark:bg-teal-900/30 dark:text-teal-400">
+              <RefreshCw className="h-2.5 w-2.5" />
+              Daily
+            </span>
+          )}
+        </div>
         {expanded ? (
           <div className="mt-1 flex flex-wrap gap-2 text-xs text-slate-500 dark:text-slate-400">
             <span className="flex items-center gap-1">
@@ -55,6 +68,17 @@ export function TaskCard({ task, expanded = false }: { task: Task; expanded?: bo
           </div>
         ) : null}
       </div>
+
+      {onDelete && !task.completed && (
+        <button
+          className="ml-auto flex h-7 w-7 shrink-0 items-center justify-center rounded-md text-slate-300 hover:bg-rose-50 hover:text-rose-500 dark:text-slate-600 dark:hover:bg-rose-900/20 dark:hover:text-rose-400"
+          onClick={() => onDelete(task.id)}
+          title="Remove daily habit"
+          type="button"
+        >
+          ✕
+        </button>
+      )}
     </div>
   );
 }

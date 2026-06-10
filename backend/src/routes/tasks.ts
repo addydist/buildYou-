@@ -14,6 +14,8 @@ type TaskRow = {
   estimated_minutes: number;
   completed: boolean;
   created_at: Date;
+  is_recurring: boolean;
+  recurring_group_id: string | null;
 };
 
 const toTask = (row: TaskRow) => ({
@@ -24,6 +26,8 @@ const toTask = (row: TaskRow) => ({
   estimatedMinutes: row.estimated_minutes,
   completed: row.completed,
   createdAt: row.created_at.toISOString(),
+  isRecurring: row.is_recurring ?? false,
+  recurringGroupId: row.recurring_group_id ?? undefined,
 });
 
 router.get("/", async (req, res) => {
@@ -42,11 +46,13 @@ router.get("/", async (req, res) => {
 
 router.post("/", async (req, res) => {
   const userId = getUserId(req);
-  const { name, difficulty, category, estimatedMinutes } = req.body as {
+  const { name, difficulty, category, estimatedMinutes, isRecurring, recurringGroupId } = req.body as {
     name: string;
     difficulty: string;
     category: string;
     estimatedMinutes: number;
+    isRecurring?: boolean;
+    recurringGroupId?: string;
   };
 
   if (!name || !difficulty || !category) {
@@ -56,10 +62,10 @@ router.post("/", async (req, res) => {
 
   try {
     const { rows } = await db.query<TaskRow>(
-      `INSERT INTO tasks (user_id, name, difficulty, category, estimated_minutes, completed)
-       VALUES ($1, $2, $3, $4, $5, false)
+      `INSERT INTO tasks (user_id, name, difficulty, category, estimated_minutes, completed, is_recurring, recurring_group_id)
+       VALUES ($1, $2, $3, $4, $5, false, $6, $7)
        RETURNING *`,
-      [userId, name, difficulty, category, estimatedMinutes ?? 60],
+      [userId, name, difficulty, category, estimatedMinutes ?? 60, isRecurring ?? false, recurringGroupId ?? null],
     );
     res.status(201).json(toTask(rows[0]));
   } catch (err) {

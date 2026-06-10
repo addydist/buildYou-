@@ -9,7 +9,10 @@
       "Bash(npx tailwindcss *)",
       "Bash(grep -o \"\\\\.dark \\\\\\\\\\\\\\\\?:\\\\?[a-z]\" ./.theme-check.css)",
       "Bash(grep -o \"\\\\.dark\\\\\\\\\\\\\\\\:[a-z-]*\" .theme-check.css)",
-      "Bash(npx eslint *)"
+      "Bash(npx eslint *)",
+      "Bash(Get-ChildItem -Path \"c:\\\\Users\\\\AdityaPal\\\\Documents\\\\Self\\\\build-city\\\\backend\" -Recurse)",
+      "Bash(Select-Object -Property FullName, PSIsContainer)",
+      "Bash(Sort-Object FullName)"
     ]
   }
 }

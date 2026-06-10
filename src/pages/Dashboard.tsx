@@ -6,6 +6,7 @@ import { useTaskStore } from "../store/taskStore";
 import { TaskCard } from "../components/TaskCard";
 import { ResourceBar } from "../components/ResourceBar";
 import { CalendarHeatmap } from "../components/CalendarHeatmap";
+import { CharacterSheet } from "../components/CharacterSheet";
 import { Panel } from "../components/ui/Panel";
 import { PrimaryButton, SecondaryButton } from "../components/ui/Buttons";
 
@@ -82,6 +83,9 @@ export function Dashboard({ onNavigate }: { onNavigate: (screen: Screen) => void
         </div>
       </section>
 <CalendarHeatmap />
+      {/* Character sheet */}
+      <CharacterSheet />
+
       {/* Today's tasks + life balance */}
       <section className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_300px]">
         <Panel title={`Today's Tasks · ${completedToday.length} / ${todayTasks.length + carryOver.length} done`}>
