@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
 import { SignedIn, SignedOut, SignIn, useAuth, UserButton } from "@clerk/clerk-react";
-import { Check, Hammer, Home, Landmark, Moon, Sun, User, Zap } from "lucide-react";
+import { Check, Hammer, Home, Landmark, Moon, Sun, Trophy, User, Zap } from "lucide-react";
 import { xpToLevel, overallRank } from "./components/CharacterSheet";
 import { Dashboard } from "./pages/Dashboard";
 import { Tasks } from "./pages/Tasks";
 import { BuildingShop, City } from "./pages/City";
 import { Profile } from "./pages/Profile";
 import { Integrations } from "./pages/Integrations";
+import { Leaderboard } from "./pages/Leaderboard";
 import { ResourceBar } from "./components/ResourceBar";
 import { Panel } from "./components/ui/Panel";
 import { useCityStore, selectCityPaused } from "./store/cityStore";
@@ -15,7 +16,7 @@ import { setTokenGetter } from "./services/apiClient";
 import { useTheme } from "./hooks/useTheme";
 import { RotateCcw } from "lucide-react";
 
-type Screen = "dashboard" | "tasks" | "city" | "shop" | "profile" | "integrations";
+type Screen = "dashboard" | "tasks" | "city" | "shop" | "profile" | "integrations" | "leaderboard";
 
 function TopBar({
   screen,
@@ -32,6 +33,7 @@ function TopBar({
     { id: "city",         label: "City",         icon: Landmark },
     { id: "shop",         label: "Shop",         icon: Hammer },
     { id: "integrations", label: "Integrations", icon: Zap },
+    { id: "leaderboard",  label: "Leaderboard",  icon: Trophy },
     { id: "profile",      label: "Profile",      icon: User },
   ];
 
@@ -41,10 +43,10 @@ function TopBar({
         <p className="text-xs font-semibold uppercase tracking-wide text-teal-700 dark:text-teal-400">
           Future self builder
         </p>
-        <h1 className="text-3xl font-bold leading-tight text-slate-950 dark:text-white">Addy City</h1>
+        <h1 className="text-3xl font-bold leading-tight text-slate-950 dark:text-white">LifeForge</h1>
       </div>
       <div className="flex items-center gap-3">
-        <nav className="grid grid-cols-6 rounded-lg border border-slate-200 bg-white p-1 shadow-sm dark:border-slate-700 dark:bg-slate-900">
+        <nav className="grid grid-cols-7 rounded-lg border border-slate-200 bg-white p-1 shadow-sm dark:border-slate-700 dark:bg-slate-900">
           {tabs.map((tab) => {
             const Icon = tab.icon;
             const active = screen === tab.id;
@@ -80,6 +82,21 @@ function TopBar({
         <UserButton />
       </div>
     </header>
+  );
+}
+
+function Footer() {
+  return (
+    <footer className="mt-6 border-t border-slate-200 pt-4 text-center text-xs text-slate-400 dark:border-slate-800 dark:text-slate-600">
+      <a
+        className="font-semibold text-slate-500 transition hover:text-teal-600 dark:text-slate-400 dark:hover:text-teal-400"
+        href="https://github.com/addydist"
+        rel="noopener noreferrer"
+        target="_blank"
+      >
+        Made with care by Aditya
+      </a>
+    </footer>
   );
 }
 
@@ -187,14 +204,14 @@ function AppInner() {
     );
   }
 
-  const isFullWidth = screen === "profile" || screen === "integrations";
+  const isFullWidth = screen === "profile" || screen === "integrations" || screen === "leaderboard";
 
   return (
     <main className="min-h-screen text-slate-900 dark:text-slate-100">
       <div className="mx-auto flex min-h-screen w-full max-w-7xl flex-col px-4 py-4 sm:px-6 lg:px-8">
         <TopBar screen={screen} onScreenChange={setScreen} />
         {isFullWidth ? (
-          screen === "profile" ? <Profile /> : <Integrations />
+          screen === "profile" ? <Profile /> : screen === "integrations" ? <Integrations /> : <Leaderboard />
         ) : (
           <div className="grid flex-1 gap-4 lg:grid-cols-[minmax(0,1fr)_340px]">
             <section className="min-w-0">
@@ -206,6 +223,7 @@ function AppInner() {
             <SidePanel />
           </div>
         )}
+        <Footer />
       </div>
     </main>
   );

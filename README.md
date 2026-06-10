@@ -1,6 +1,6 @@
-# Addy City
+# LifeForge
 
-Addy City is a productivity RPG MVP where completing real tasks grows a future-self city. Tasks reward resources, buildings represent life areas, streaks multiply rewards, and rare monuments create a collection loop.
+LifeForge is a productivity RPG MVP where completing real tasks grows a future-self city and levels up your character stats. Tasks reward resources, buildings represent life areas, streaks multiply rewards, and rare monuments create a collection loop.
 
 ## Run Locally
 
