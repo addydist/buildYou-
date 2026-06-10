@@ -223,10 +223,7 @@ function TileSprite({ tile, col, row, isSelected, onSelect }: TileProps) {
         draw={drawBg}
         eventMode="static"
         cursor={building ? "grab" : "pointer"}
-        onclick={handleClick}
-        onpointerdown={handlePointerDown}
-        onpointerover={onOver}
-        onpointerout={onOut}
+        onClick={handleClick}
       />
       {building ? (
         <>
